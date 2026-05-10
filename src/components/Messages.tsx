@@ -12,21 +12,16 @@ const Messages = ({ msgs }: { msgs: Message[] }) => {
       {msgs.map((msg: Message, index) => (
         <div
           key={index}
-          style={{
-            textAlign: msg.role === "user" ? "right" : "left",
-            marginBottom: 16,
-          }}
+          className={`mb-4 ${msg.role === "user" ? "text-right" : "text-left"}`}
         >
           <div
-            style={{
-              display: "inline-block",
-              padding: "12px 16px",
-              borderRadius: 12,
-              background: msg.role === "user" ? "#2563eb" : "#f3f4f6",
-              color: msg.role === "user" ? "white" : "black",
-              maxWidth: "80%",
-              whiteSpace: "pre-wrap",
-            }}
+            className={[
+              "inline-block rounded-[12px] max-w-[80%] whitespace-pre-wrap",
+              msg.role === "user"
+                ? "bg-blue-600 text-white"
+                : "bg-gray-100 text-black",
+              "py-3 px-4"
+            ].join(" ")}
           >
             <Markdown remarkPlugins={[remarkGfm]}>{msg.content}</Markdown>
           </div>

@@ -3,6 +3,7 @@
 
 import { useRef, useState } from "react";
 import Messages from "./Messages";
+import ChatHistory from "./ChatHistory";
 
 type Message = {
   role: "user" | "assistant";
@@ -42,7 +43,7 @@ const Chat = () => {
       abortControllerRef.current = controller;
 
       const response = await fetch(
-        "http://localhost:3000/chat?thread_id=004",
+        "http://localhost:3000/chat?thread_id=008",
         {
           method: "POST",
           headers: {
@@ -51,7 +52,7 @@ const Chat = () => {
           },
           signal: controller.signal,
           body: JSON.stringify({
-            user_id: "004",
+            user_id: "008",
             model_name: "openai:gpt-4o-mini",
             user_message: input,
           }),
@@ -127,81 +128,45 @@ const Chat = () => {
   };
 
   return (
-    <div
-      style={{
-        width: "700px",
-        margin: "40px auto",
-        fontFamily: "Arial",
-      }}
-    >
-      <h2>Streaming AI Chat</h2>
+    <div className="flex h-screen w-screen font-sans bg-gray-900 text-white">
+      {/* Sidebar */}
 
-      <div
-        style={{
-          border: "1px solid #ccc",
-          borderRadius: 10,
-          padding: 20,
-          height: 500,
-          overflowY: "auto",
-          marginBottom: 20,
-        }}
-      >
-        <Messages msgs={messages} />
-      </div>
+      <ChatHistory history={[
+        { id: 1, name: "hi 1" },
+        { id: 2, name: "hi 2" },
+        { id: 3, name: "hi 3" },
+      ]} />
 
-      <div
-        style={{
-          display: "flex",
-          gap: 10,
-        }}
-      >
-        <input
-          value={input}
-          onChange={(e) =>
-            setInput(e.target.value)
-          }
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              sendMessage();
-            }
-          }}
-          placeholder="Ask anything..."
-          style={{
-            flex: 1,
-            padding: 14,
-            borderRadius: 10,
-            border: "1px solid #ccc",
-          }}
-        />
 
-        <button
-          onClick={sendMessage}
-          disabled={loading}
-          style={{
-            padding: "0 20px",
-            borderRadius: 10,
-            border: "none",
-            cursor: "pointer",
-          }}
-        >
-          Send
-        </button>
-
-        {loading && (
+      {/* Chat Panel */}
+      <div className="flex-1 flex flex-col h-full">
+        <div className="flex-1 overflow-y-auto p-6">
+          <Messages msgs={messages} />
+        </div>
+        <div className="p-4 border-t border-gray-200 flex gap-2">
+          <input
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter") sendMessage(); }}
+            placeholder="Ask anything..."
+            className="flex-1 p-3.5 rounded-[10px] border border-gray-300"
+          />
           <button
-            onClick={stopStreaming}
-            style={{
-              padding: "0 20px",
-              borderRadius: 10,
-              border: "none",
-              background: "red",
-              color: "white",
-              cursor: "pointer",
-            }}
+            onClick={sendMessage}
+            disabled={loading}
+            className="px-5 rounded-[10px] border-none cursor-pointer bg-blue-600 text-white disabled:opacity-50"
           >
-            Stop
+            Send
           </button>
-        )}
+          {loading && (
+            <button
+              onClick={stopStreaming}
+              className="px-5 rounded-[10px] border-none bg-red-600 text-white cursor-pointer"
+            >
+              Stop
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
