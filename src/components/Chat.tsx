@@ -131,17 +131,12 @@ const Chat = () => {
     <div className="flex h-screen w-screen font-sans bg-gray-900 text-white">
       {/* Sidebar */}
 
-      <ChatHistory history={[
-        { id: 1, name: "hi 1" },
-        { id: 2, name: "hi 2" },
-        { id: 3, name: "hi 3" },
-      ]} />
-
+      <ChatHistory />
 
       {/* Chat Panel */}
       <div className="flex-1 flex flex-col h-full">
         <div className="flex-1 overflow-y-auto p-6">
-          <Messages msgs={messages} />
+          <Messages/>
         </div>
         <div className="p-4 border-t border-gray-200 flex gap-2">
           <input

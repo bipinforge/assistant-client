@@ -1,21 +1,28 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
+export type MessageResponse = {
+  messages: Message[];
+  id: string;
+  thread_id: string;
+};
+
 export type Message = {
   id: string;
   role: 'user' | 'assistant';
   content: string;
 };
 
-export const fetchMessages = createAsyncThunk<Message[]>('messages/fetchMessages', async () => {
-  const res = await fetch('/api/messages');
+export const fetchMessages = createAsyncThunk<MessageResponse, string>('messages/fetchMessages', async (threadId) => {
+  const res = await fetch(`http://localhost:3000/messages/${threadId}`);
   if (!res.ok) throw new Error('Failed to fetch messages');
-  return res.json();
+  const data = await res.json();
+  return data;
 });
 
 const messagesSlice = createSlice({
   name: 'messages',
   initialState: {
-    items: [] as Message[],
+    items: { messages: [], id: '', thread_id: '' } as MessageResponse,
     loading: false,
     error: null as string | null,
   },

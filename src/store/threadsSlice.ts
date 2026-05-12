@@ -2,23 +2,30 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 export type Thread = {
   id: string;
-  title: string;
+  thread_id: string;
+  name: string;
 };
 
 export const fetchThreads = createAsyncThunk<Thread[]>('threads/fetchThreads', async () => {
-  const res = await fetch('/api/threads');
+  const res = await fetch('http://localhost:3000/threads');
   if (!res.ok) throw new Error('Failed to fetch threads');
-  return res.json();
+  const data = await res.json();
+  return data.threads as Thread[];
 });
 
 const threadsSlice = createSlice({
   name: 'threads',
   initialState: {
     items: [] as Thread[],
+    currentThreadId: null as string | null,
     loading: false,
     error: null as string | null,
   },
-  reducers: {},
+  reducers: {
+    setCurrentThreadId: (state, action) => {
+      state.currentThreadId = action.payload;
+    }
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchThreads.pending, (state) => {
@@ -37,3 +44,4 @@ const threadsSlice = createSlice({
 });
 
 export default threadsSlice.reducer;
+export const { setCurrentThreadId } = threadsSlice.actions;
