@@ -2,20 +2,25 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch, RootState } from '../store';
 import { fetchThreads, setCurrentThreadId, type Thread } from '../store/threadsSlice';
+import { v4 as uuidv4 } from 'uuid';
 
-
-const ChatHistory = () => {
+const ChatHistory = ({clearStreamedMessages}: {clearStreamedMessages: () => void}) => {
   const dispatch = useDispatch<AppDispatch>();
   const { items } = useSelector((state: RootState) => state.threads);
-  console.log('Threads in ChatHistory:', items);
-
 
   useEffect(() => {
     dispatch(fetchThreads());
   }, [dispatch]);
 
   const onThreadClick = (threadId: string) => {
-    dispatch(setCurrentThreadId(threadId));
+    if(threadId === 'new-chat') {
+      const newThreadId = `thread-${uuidv4()}`;
+      dispatch(setCurrentThreadId(newThreadId));
+      clearStreamedMessages();
+    }else {
+       dispatch(setCurrentThreadId(threadId));
+    }
+   
   };
   return (
     <div className="w-1/4 min-w-[220px] max-w-xs border-r border-gray-300 bg-gray-900 p-4 flex flex-col">

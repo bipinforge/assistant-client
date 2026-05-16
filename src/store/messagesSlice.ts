@@ -16,6 +16,11 @@ export const fetchMessages = createAsyncThunk<MessageResponse, string>('messages
   const res = await fetch(`http://localhost:3000/messages/${threadId}`);
   if (!res.ok) throw new Error('Failed to fetch messages');
   const data = await res.json();
+  
+  if (!data.messages) {
+    data.messages = [];
+    data.thread_id = threadId;
+  }
   return data;
 });
 

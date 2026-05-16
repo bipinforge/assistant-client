@@ -5,12 +5,8 @@ import type { AppDispatch, RootState } from '../store';
 import { fetchMessages, type Message } from '../store/messagesSlice';
 import { useEffect } from 'react';
 
-// type Message = {
-//   role: "user" | "assistant";
-//   content: string;
-// };
 
-const Messages = () => {
+const Messages = ( { streamingMessage }: { streamingMessage: Message[] } ) => {
   const dispatch = useDispatch<AppDispatch>();
   const { currentThreadId } = useSelector((state: RootState) => state.threads);
   const { items } = useSelector((state: RootState) => state.messages);
@@ -20,10 +16,10 @@ const Messages = () => {
     }
   }, [dispatch, currentThreadId]);
 
-  if (items.messages.length === 0) {
+  if (items.messages.length === 0 && streamingMessage.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-full w-full">
-        <img src="/favicon.svg" alt="No messages" className="w-64 h-64" />
+        <img src="/favicon.svg" alt="No messages" className="w-64 h-64 rounded-full" />
       </div>
     );
   }
@@ -32,6 +28,24 @@ const Messages = () => {
       {items.messages.map((msg: Message, index) => (
         <div
           key={index}
+          className={`mb-4 ${msg.role === "user" ? "text-right" : "text-left"}`}
+        >
+          <div
+            className={[
+              "inline-block rounded-[12px] max-w-[80%] whitespace-pre-wrap",
+              msg.role === "user"
+                ? "bg-blue-600 text-white"
+                : "bg-gray-100 text-black",
+              "py-3 px-4"
+            ].join(" ")}
+          >
+            <Markdown remarkPlugins={[remarkGfm]}>{msg.content}</Markdown>
+          </div>
+        </div>
+      ))}
+      {streamingMessage.length > 0 && streamingMessage.map((msg: Message, index) => (
+         <div
+          key={`streaming-${index}`}
           className={`mb-4 ${msg.role === "user" ? "text-right" : "text-left"}`}
         >
           <div
